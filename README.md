@@ -27,9 +27,9 @@ vanessachaves-site/
 
 **Cores** (`styles/style.css`, bloco `:root` no topo):
 ```css
---roxo: #AB71D5;
+--roxo: #954CCA;   /* tom da marca ajustado para contraste WCAG AA */
 --amarelo: #FFD002;
---azul: #52A0E9;
+--azul: #1A78CF;   /* tom da marca ajustado para contraste WCAG AA */
 --fundo: #E9E6EC;   /* fundo atrás das telas */
 ```
 
