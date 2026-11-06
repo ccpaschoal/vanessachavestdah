@@ -99,9 +99,11 @@ html.deck-on, .deck-on body { height: 100%; overflow: hidden; overscroll-behavio
 .deck-on .screen {
   --peek: 64px;
   position: fixed;
+  top: calc(var(--nav) + env(safe-area-inset-top, 0px) + (100vh - var(--nav) - env(safe-area-inset-top, 0px)) / 2);
   top: calc(var(--nav) + env(safe-area-inset-top, 0px) + (100svh - var(--nav) - env(safe-area-inset-top, 0px)) / 2);
   left: 50%;
   width: min(1120px, calc(100vw - max(16px, env(safe-area-inset-left, 0px)) - max(16px, env(safe-area-inset-right, 0px))));
+  max-height: calc(100vh - var(--nav) - env(safe-area-inset-top, 0px) - var(--peek) * 2);
   max-height: calc(100svh - var(--nav) - env(safe-area-inset-top, 0px) - var(--peek) * 2);
   overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin;
   transform: translate(-50%, -50%);
@@ -117,12 +119,12 @@ html.deck-on, .deck-on body { height: 100%; overflow: hidden; overscroll-behavio
 /* Títulos se escrevem letra por letra */
 .js .is-split .palavra-t { display: inline-block; white-space: nowrap; }
 .js .is-split .sub .ch { text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.16em; text-decoration-color: var(--sub-cor, currentColor); }
-.js .is-split .ch { display: inline-block; opacity: 0; filter: blur(8px); transform: translateY(.25em);
-  transition: opacity .5s var(--ease), filter .5s var(--ease), transform .5s var(--ease); transition-delay: calc(var(--c) * 32ms + 180ms); }
-.js .is-current .is-split .ch { opacity: 1; filter: none; transform: none; }
+.js .is-split .ch { display: inline-block; opacity: 0; transform: translateY(.25em);
+  transition: opacity .5s var(--ease), transform .5s var(--ease); transition-delay: calc(var(--c) * 32ms + 180ms); }
+.js .is-current .is-split .ch { opacity: 1; transform: none; }
 .js .sobe { opacity: 0; transform: translateY(40px); transition: opacity .8s var(--ease) .3s, transform .8s var(--ease) .3s; }
 .js .is-current .sobe { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) { .js .is-split .ch, .js .sobe { opacity: 1; filter: none; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .js .is-split .ch, .js .sobe { opacity: 1; transform: none; } }
 
 /* ── 1. Topo: foto em bloco reto na direita, como a capa "Quem é Vanessa Chaves?" ── */
 .screen { --pad: clamp(24px, 3.6vw, 48px); }
@@ -181,8 +183,7 @@ html.deck-on, .deck-on body { height: 100%; overflow: hidden; overscroll-behavio
 /* Sem JavaScript: os itens viram uma fileira com rolagem lateral */
 .cf-rail { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
 .cf-item { position: relative; flex: 0 0 var(--cf); margin: 0; scroll-snap-align: center; }
-.js .cf-rail { display: block; overflow: visible; padding-bottom: 0; }
-.js .cf-rail { position: relative; height: calc(var(--cf) + 16px); touch-action: pan-y; cursor: grab; user-select: none; }
+.js .cf-rail { display: block; overflow: visible; padding-bottom: 0; position: relative; height: calc(var(--cf) + 16px); touch-action: pan-y; cursor: grab; user-select: none; }
 .js .cf-rail.is-arrastando { cursor: grabbing; }
 .js .cf-item { position: absolute; top: 8px; left: 50%; width: var(--cf); margin-left: calc(var(--cf) / -2);
   transform-origin: 50% 50%; transition: transform .6s var(--ease), opacity .6s var(--ease), filter .6s var(--ease); will-change: transform;
@@ -192,7 +193,7 @@ html.deck-on, .deck-on body { height: 100%; overflow: hidden; overscroll-behavio
 .cf-conta { font-family: var(--f-display); font-weight: 800; font-variant-numeric: tabular-nums; }
 .cf-barra { position: relative; width: min(150px, 28vw); height: 3px; background: rgba(0,0,0,.15); }
 .cf-barra span { position: absolute; inset: 0 auto 0 0; width: var(--cf-p, 0%); background: currentColor; transition: width .6s var(--ease); }
-.cf-btn { width: 38px; height: 38px; display: grid; place-items: center; border: 2.5px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+.cf-btn { width: 38px; height: 38px; display: grid; place-items: center; border: 2.5px solid currentColor; background: transparent; color: inherit; cursor: pointer; transition: transform .18s var(--ease), opacity .18s; }
 .cf-btn:disabled { opacity: .3; cursor: default; }
 .cf-btn svg { width: 18px; height: 18px; }
 
@@ -233,7 +234,6 @@ main:focus { outline: none; }
 .btn:active { transform: none; box-shadow: none; }
 .nav a.link, .saiba, .rodape a { transition: color .18s, opacity .18s; }
 .saiba:hover, .rodape a:hover { opacity: .8; }
-.cf-btn { transition: transform .18s var(--ease), opacity .18s; }
 .cf-btn:not(:disabled):hover { transform: translateY(-2px); }
 /* Telas baixas (notebook): tira as credenciais do início para caber sem rolar */
 @media (min-width: 821px) and (max-height: 820px) { .cred { display: none; } }

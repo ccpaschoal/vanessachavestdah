@@ -187,13 +187,13 @@
     if (contador) contador.textContent = `${pad2(atual + 1)} / ${pad2(telas.length)}`;
   };
 
-  const go = (i) => {
+  const go = (i, { deFoco = false } = {}) => {
     const alvo = Math.max(0, Math.min(telas.length - 1, i));
     if (alvo === atual) return;
     atual = alvo;
     travado = true;
     render();
-    telas[atual].scrollTop = 0;
+    if (!deFoco) telas[atual].scrollTop = 0; // vindo do Tab, o item focado continua visível
     setTimeout(() => { travado = false; }, DUR);
   };
 
@@ -208,7 +208,10 @@
   // Navegando com Tab: ao focar algo de outra tela, ela vem para o meio
   document.addEventListener('focusin', (e) => {
     const i = telas.findIndex((t) => t.contains(e.target));
-    if (i >= 0 && i !== atual) go(i);
+    if (i >= 0 && i !== atual) {
+      go(i, { deFoco: true });
+      e.target.scrollIntoView?.({ block: 'nearest' });
+    }
   });
 
   // Se a tela atual tiver mais conteúdo que a altura (celular), rola dentro dela antes de trocar
@@ -220,6 +223,7 @@
 
   let soma = 0, timer;
   window.addEventListener('wheel', (e) => {
+    if (e.ctrlKey || e.metaKey) return; // Ctrl + rodinha é o zoom do navegador
     if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
     const dir = Math.sign(e.deltaY);
     if (podeRolar(dir) && telas[atual].contains(e.target)) return;
@@ -247,6 +251,7 @@
   }, { passive: true });
 
   document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.altKey || e.metaKey) return; // atalhos do navegador
     if (travado || e.target.closest('input, textarea, select, [contenteditable]')) return;
     // Espaço em link ou botão é para clicar, não para trocar de tela
     if (e.key === ' ' && e.target.closest('a, button')) return;
@@ -264,6 +269,13 @@
   // Links internos (#secao) levam à tela certa
   document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
     const alvo = document.getElementById(a.getAttribute('href').slice(1));
+    // "Pular para o conteúdo" aponta para o <main>: leva o foco para a tela que está na frente
+    if (alvo && !alvo.closest('.screen') && alvo.contains(telas[atual])) {
+      e.preventDefault();
+      telas[atual].setAttribute('tabindex', '-1');
+      telas[atual].focus({ preventScroll: true });
+      return;
+    }
     const i = alvo ? telas.indexOf(alvo.closest('.screen')) : -1;
     if (i < 0) return;
     e.preventDefault();
