@@ -61,6 +61,7 @@
 
   document.querySelectorAll('.cf').forEach((cf) => {
     const rail = cf.querySelector('.cf-rail');
+    if (!rail) return; // carrossel sem faixa: ignora em vez de parar o script inteiro
     const items = [...rail.querySelectorAll('.cf-item')];
     if (!items.length) return;
     cf.setAttribute('role', 'region');
