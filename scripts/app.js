@@ -203,7 +203,7 @@
   const nomeTela = (t) => (t.querySelector('h1, h2')?.textContent || '').replace(/\s+/g, ' ').trim();
   let timerTrava = 0, timerAnima = 0, primeira = true;
 
-  const go = (i, { deFoco = false } = {}) => {
+  const go = (i, { deFoco = false, atualizaHash = true } = {}) => {
     const alvo = Math.max(0, Math.min(telas.length - 1, i));
     if (alvo === atual) return;
     atual = alvo;
@@ -213,7 +213,7 @@
     if (!primeira) voz.textContent = `Tela ${atual + 1} de ${telas.length}${nomeTela(telas[atual]) ? `: ${nomeTela(telas[atual])}` : ''}`;
     // O endereço acompanha a tela (dá para copiar o link de uma seção)
     const id = telas[atual].id;
-    if (!primeira) try { history.replaceState(null, '', id ? `#${id}` : location.pathname + location.search); } catch { /* ok */ }
+    if (!primeira && atualizaHash) try { history.replaceState(null, '', id ? `#${id}` : location.pathname + location.search); } catch { /* ok */ }
     primeira = false;
     esperaPausa = true;
     if (!deFoco) telas[atual].scrollTop = 0; // vindo do Tab, o item focado continua visível
@@ -320,7 +320,13 @@
   window.addEventListener('load', atualizaTudo);
   navAltura();
   // Link de fora com #secao abre direto na tela certa
-  const doHash = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
-  const inicial = doHash ? telas.indexOf(doHash.closest('.screen')) : -1;
-  go(inicial >= 0 ? inicial : 0);
+  const indiceDoHash = () => {
+    let id = location.hash.slice(1);
+    try { id = decodeURIComponent(id); } catch { return 0; }
+    const alvo = id ? document.getElementById(id) : null;
+    const i = alvo ? telas.indexOf(alvo.closest('.screen')) : -1;
+    return i >= 0 ? i : 0;
+  };
+  window.addEventListener('hashchange', () => go(indiceDoHash(), { atualizaHash: false }));
+  go(indiceDoHash(), { atualizaHash: false });
 })();

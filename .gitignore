@@ -4,3 +4,9 @@ desktop.ini
 *.psd
 .netlify/
 node_modules/
+
+# Credenciais locais (somente o exemplo sem valores reais é versionado)
+.env
+.env.*
+!.env.example
+*.log

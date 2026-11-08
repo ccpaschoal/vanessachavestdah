@@ -5,6 +5,12 @@
 
 # Nunca servir os arquivos internos do repositório
 [[redirects]]
+  from = "/.env*"
+  to = "/404"
+  status = 404
+  force = true
+
+[[redirects]]
   from = "/.git/*"
   to = "/404"
   status = 404
