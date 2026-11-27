@@ -8,7 +8,7 @@ Site da **Vanessa Chaves** (@vanessachaves_tdah), orientadora parental em TDAH e
 - **Seções empilhadas**: no computador, cada seção ocupa a tela e a próxima sobe por cima, enquanto a anterior encolhe e some
 - **Carrossel de garrafa**: os posts giram na horizontal (arrastar, setas ou teclado)
 - **Frases**: as cinco aparecem juntas, em grade
-- **Títulos letra por letra** quando a seção aparece
+- **Conteúdo que surge ao rolar**: títulos letra por letra e cada bloco (frases, cartões, itens) entrando um depois do outro
 - **Responsivo**: no celular, uma seção embaixo da outra, sem empilhar; respeita o notch e a barra de gestos do iPhone, botões com 44 px para o dedo e, com o celular deitado, foto ao lado do texto
 - **Acessível**: navegação por teclado, textos alternativos e respeito a "reduzir movimento"
 

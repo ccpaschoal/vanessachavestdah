@@ -170,7 +170,6 @@
     let i = 0;
     caixas.forEach((c, n) => {
       if (c.top <= vh / 2) i = n;
-      if (c.top < vh * .85) secoes[n].classList.add('is-visto'); // anima títulos e blocos na primeira vez
       // quanto a seção seguinte já cobriu esta (0 a 1)
       const prox = caixas[n + 1];
       const saida = empilhada() && prox ? Math.min(1, Math.max(0, 1 - prox.top / vh)) : 0;
@@ -222,6 +221,21 @@
     renders.forEach((r) => r());
     marca();
   };
+
+  // Títulos e blocos surgem um a um quando entram na tela (só na primeira vez)
+  const surgem = [...document.querySelectorAll('.sobe, .is-split')];
+  surgem.forEach((el) => {
+    const irmaos = [...el.parentElement.children].filter((x) => x.classList.contains('sobe'));
+    el.style.setProperty('--i', Math.max(0, irmaos.indexOf(el)));
+  });
+  if ('IntersectionObserver' in window) {
+    const olho = new IntersectionObserver((entradas) => entradas.forEach((e) => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('is-visto');
+      olho.unobserve(e.target);
+    }), { rootMargin: '0px 0px -8% 0px' });
+    surgem.forEach((el) => olho.observe(el));
+  } else surgem.forEach((el) => el.classList.add('is-visto'));
 
   let raf = 0;
   window.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(marca); }, { passive: true });

@@ -133,9 +133,10 @@ main { padding-top: var(--nav); }
 .js .is-split .sub .ch { text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.16em; text-decoration-color: var(--sub-cor, currentColor); }
 .js .is-split .ch { display: inline-block; opacity: 0; transform: translateY(.25em);
   transition: opacity .5s var(--ease), transform .5s var(--ease); transition-delay: calc(var(--c) * 32ms + 180ms); }
-.js .is-visto .is-split .ch { opacity: 1; transform: none; }
-.js .sobe { opacity: 0; transform: translateY(40px); transition: opacity .8s var(--ease) .3s, transform .8s var(--ease) .3s; }
-.js .is-visto .sobe { opacity: 1; transform: none; }
+.js .is-split.is-visto .ch { opacity: 1; transform: none; }
+/* Cada bloco surge quando entra na tela; vizinhos do mesmo grupo entram um depois do outro (--i) */
+.js .sobe { opacity: 0; transform: translateY(32px); transition: opacity .8s var(--ease), transform .8s var(--ease); transition-delay: calc(var(--i, 0) * 90ms + 80ms); }
+.js .sobe.is-visto { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .js .is-split .ch, .js .sobe { opacity: 1; transform: none; } }
 
 /* ── 1. Topo: foto em bloco reto na direita, como a capa "Quem é Vanessa Chaves?" ── */
