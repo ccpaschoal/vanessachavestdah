@@ -1,12 +1,11 @@
-/* Vanessa Chaves · telas que trocam na vertical e carrosséis na horizontal ("garrafas").
-   Sem JavaScript o site continua funcionando: as telas ficam empilhadas com rolagem normal. */
+/* Vanessa Chaves · seções de tela cheia que sobem uma sobre a outra, títulos animados e carrossel de posts.
+   Sem JavaScript o site continua funcionando: as seções ficam uma embaixo da outra. */
 (() => {
   const root = document.documentElement;
   root.classList.add('js');
   const reduz = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Medidas da transição: a tela atual no meio, as vizinhas menores espiando */
-  const TELA = { escala: [1, .82, .68], opac: [1, .55, 0], brilho: [1, .7, .5], folga: 22 };
+  /* Medidas do carrossel: o item da frente no meio, os vizinhos menores atrás */
   const CARROSSEL = { dist: [0, .56, .98, 1.3], escala: [1, .74, .56, .44], opac: [1, .92, .6, 0], brilho: [1, .72, .58, .5] };
   const renders = [];
   const pad2 = (n) => String(n).padStart(2, '0');
@@ -87,13 +86,6 @@
     rod.append(prev, conta, barra, next);
     cf.append(rod);
 
-    items.forEach((item, i) => {
-      if (item.matches('a')) return; // link continua sendo link para o leitor de tela (com o nome dele)
-      item.setAttribute('role', 'group');
-      item.setAttribute('aria-roledescription', 'slide');
-      item.setAttribute('aria-label', `${i + 1} de ${items.length}`);
-    });
-
     let atual = Math.min(items.length - 1, Number(cf.dataset.inicio ?? Math.floor((items.length - 1) / 2)));
     let arrastou = false;
 
@@ -111,7 +103,7 @@
         item.style.zIndex = 10 - ad;
         item.style.visibility = Math.abs(d) > 3 ? 'hidden' : 'visible';
         item.setAttribute('aria-hidden', String(d !== 0)); // leitor de tela lê só o item da frente
-        if (item.matches('a')) item.tabIndex = d === 0 ? 0 : -1;
+        item.tabIndex = d === 0 ? 0 : -1; // os itens são links: só o da frente recebe o Tab
       });
       conta.textContent = `${pad2(atual + 1)} / ${pad2(items.length)}`;
       barra.style.setProperty('--cf-p', `${((atual + 1) / items.length) * 100}%`);
@@ -156,202 +148,87 @@
     render();
   });
 
-  /* ── Telas na vertical ── */
-  const telas = [...document.querySelectorAll('.screen')];
+  /* ── Seções empilhadas ──
+     No computador cada seção gruda na tela (sticky) e a próxima sobe por cima, enquanto a de baixo
+     encolhe e some. No celular, ou com "reduzir movimento", é só uma seção embaixo da outra. */
+  const secoes = [...document.querySelectorAll('.screen')];
   const topo = document.querySelector('.topo');
   const contador = document.getElementById('contador');
-  if (!telas.length || !topo) return;
+  const main = document.querySelector('main');
+  if (!secoes.length || !topo || !main) return;
+  const largo = matchMedia('(min-width: 901px) and (min-height: 500px)');
+  let atual = -1;
 
-  /* No celular (em pé ou deitado) a página rola normal: as seções são mais altas que a tela e o modo de telas as cortava */
-  const celular = matchMedia('(max-width: 600px), (max-height: 500px) and (pointer: coarse)');
-  // Girou o aparelho ou mudou a janela a ponto de trocar de modo: recarrega no modo certo
-  celular.addEventListener('change', () => location.reload());
-  if (celular.matches) {
-    // cada seção anima (títulos e blocos) na primeira vez que aparece
-    const aparece = new IntersectionObserver((entradas) => entradas.forEach((e) => {
-      if (e.isIntersecting) e.target.classList.add('is-current');
-    }), { rootMargin: '0px 0px -15% 0px' });
-    // contador e barra do topo seguem a seção que cruza o meio da tela
-    const meio = new IntersectionObserver((entradas) => entradas.forEach((e) => {
-      if (!e.isIntersecting) return;
-      const i = telas.indexOf(e.target);
-      topo.style.setProperty('--progresso', (i / (telas.length - 1)).toFixed(4));
-      if (contador) contador.textContent = `${pad2(i + 1)} / ${pad2(telas.length)}`;
-    }), { rootMargin: '-50% 0px -49% 0px' });
-    telas.forEach((t) => { aparece.observe(t); meio.observe(t); });
-    // Medidas dos carrosséis de novo quando a fonte e as imagens chegam ou a largura muda
-    const mede = () => renders.forEach((r) => r());
-    window.addEventListener('load', mede);
-    window.addEventListener('resize', mede);
-    return;
-  }
+  const empilhada = () => root.classList.contains('empilha');
+  // Posição de rolagem em que a seção começa (soma das alturas: o sticky não atrapalha a conta)
+  const inicioDe = (i) => secoes.slice(0, i).reduce((y, t) => y + t.offsetHeight,
+    empilhada() ? main.offsetTop : main.offsetTop + parseFloat(getComputedStyle(main).paddingTop) - topo.offsetHeight);
 
-  const DUR = reduz ? 0 : 850;
-  let atual = -1, travado = false;
-  root.classList.add('deck-on');
-
-  const navAltura = () => root.style.setProperty('--nav', `${topo.offsetHeight}px`);
-
-  const render = () => {
+  const marca = () => {
     const vh = window.innerHeight;
-    const { folga } = TELA;
-    const alturas = telas.map((t) => t.offsetHeight); // todas as leituras antes das escritas (sem recalcular layout a cada tela)
-    const hAtual = alturas[atual];
-    telas.forEach((t, i) => {
-      const d = i - atual, ad = Math.min(Math.abs(d), 2);
-      let y = 0;
-      if (ad === 1) y = Math.sign(d) * (hAtual / 2 + folga + (alturas[i] * TELA.escala[1]) / 2);
-      else if (ad === 2) y = Math.sign(d) * vh;
-      t.style.transform = `translate(-50%, -50%) translateY(${y.toFixed(1)}px) scale(${TELA.escala[ad]})`;
-      t.style.opacity = TELA.opac[ad];
-      t.style.filter = ad ? `brightness(${TELA.brilho[ad]})` : 'none';
-      t.style.zIndex = 10 - ad;
-      t.style.visibility = Math.abs(d) > 2 ? 'hidden' : 'visible';
-      t.classList.toggle('is-current', d === 0);
-      t.classList.toggle('is-near', ad === 1);
+    const caixas = secoes.map((t) => t.getBoundingClientRect()); // todas as leituras antes das escritas
+    let i = 0;
+    caixas.forEach((c, n) => {
+      if (c.top <= vh / 2) i = n;
+      if (c.top < vh * .85) secoes[n].classList.add('is-visto'); // anima títulos e blocos na primeira vez
+      // quanto a seção seguinte já cobriu esta (0 a 1)
+      const prox = caixas[n + 1];
+      const saida = empilhada() && prox ? Math.min(1, Math.max(0, 1 - prox.top / vh)) : 0;
+      secoes[n].style.setProperty('--saida', saida.toFixed(3));
     });
-    const id = telas[atual].id;
+    if (window.scrollY + vh >= document.documentElement.scrollHeight - 2) i = secoes.length - 1;
+    if (i === atual) return;
+    const primeira = atual < 0;
+    atual = i;
+    secoes.forEach((t, n) => t.classList.toggle('is-current', n === i));
+    const id = secoes[i].id;
     document.querySelectorAll('.nav a.link').forEach((l) => {
       const ativo = !!id && l.getAttribute('href') === `#${id}`;
       l.classList.toggle('is-ativo', ativo);
       if (ativo) l.setAttribute('aria-current', 'true'); else l.removeAttribute('aria-current');
     });
-    topo.style.setProperty('--progresso', (atual / (telas.length - 1)).toFixed(4));
-    if (contador) contador.textContent = `${pad2(atual + 1)} / ${pad2(telas.length)}`;
+    topo.style.setProperty('--progresso', (i / (secoes.length - 1)).toFixed(4));
+    if (contador) contador.textContent = `${pad2(i + 1)} / ${pad2(secoes.length)}`;
+    // O endereço acompanha a seção (dá para copiar o link)
+    if (!primeira) try { history.replaceState(null, '', id ? `#${id}` : location.pathname + location.search); } catch { /* ok */ }
   };
 
-  // Leitor de tela: anuncia a tela que veio para a frente (o contador visual não é anunciado)
-  const voz = document.createElement('p');
-  voz.className = 'sr-only';
-  voz.setAttribute('aria-live', 'polite');
-  document.body.append(voz);
-  const nomeTela = (t) => (t.querySelector('h1, h2')?.textContent || '').replace(/\s+/g, ' ').trim();
-  let timerTrava = 0, timerAnima = 0, primeira = true;
-
-  const go = (i, { deFoco = false, atualizaHash = true } = {}) => {
-    const alvo = Math.max(0, Math.min(telas.length - 1, i));
-    if (alvo === atual) return;
-    atual = alvo;
-    travado = !primeira; // ao abrir a página, as setas já funcionam
-    root.classList.add('animando'); // will-change só durante a troca (camadas extras pesam no celular)
-    render();
-    if (!primeira) voz.textContent = `Tela ${atual + 1} de ${telas.length}${nomeTela(telas[atual]) ? `: ${nomeTela(telas[atual])}` : ''}`;
-    // O endereço acompanha a tela (dá para copiar o link de uma seção)
-    const id = telas[atual].id;
-    if (!primeira && atualizaHash) try { history.replaceState(null, '', id ? `#${id}` : location.pathname + location.search); } catch { /* ok */ }
-    primeira = false;
-    esperaPausa = true;
-    if (!deFoco) telas[atual].scrollTop = 0; // vindo do Tab, o item focado continua visível
-    // Cancela o timer da troca anterior: senão ele destrava no meio desta animação
-    clearTimeout(timerTrava);
-    clearTimeout(timerAnima);
-    timerTrava = setTimeout(() => { travado = false; }, DUR);
-    timerAnima = setTimeout(() => root.classList.remove('animando'), DUR + 50);
+  const vai = (i, suave = !reduz) => window.scrollTo({ top: Math.max(0, inicioDe(i)), behavior: suave ? 'smooth' : 'instant' });
+  const indiceDe = (id) => {
+    const alvo = id ? document.getElementById(id) : null;
+    return alvo ? secoes.indexOf(alvo.closest('.screen')) : -1;
+  };
+  const indiceDoHash = () => {
+    try { return indiceDe(decodeURIComponent(location.hash.slice(1))); } catch { return -1; }
   };
 
-  // A tela vizinha que espia também é clicável
-  telas.forEach((t, i) => t.addEventListener('click', (e) => {
-    if (i === atual) return;
-    e.preventDefault();
-    e.stopPropagation();
-    go(i);
-  }, true));
-
-  // Navegando com Tab: ao focar algo de outra tela, ela vem para o meio
-  document.addEventListener('focusin', (e) => {
-    const i = telas.findIndex((t) => t.contains(e.target));
-    if (i >= 0 && i !== atual) {
-      go(i, { deFoco: true });
-      e.target.scrollIntoView?.({ block: 'nearest' });
-    }
-  });
-
-  // Se a tela atual tiver mais conteúdo que a altura (celular), rola dentro dela antes de trocar
-  const podeRolar = (dir) => {
-    const el = telas[atual];
-    if (el.scrollHeight <= el.clientHeight + 2) return false;
-    return dir > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 2 : el.scrollTop > 2;
-  };
-
-  let soma = 0, timer, esperaPausa = false, ultimaRoda = 0;
-  window.addEventListener('wheel', (e) => {
-    if (e.ctrlKey || e.metaKey) return; // Ctrl + rodinha é o zoom do navegador
-    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-    const dir = Math.sign(e.deltaY);
-    if (podeRolar(dir) && telas[atual].contains(e.target)) return;
-    e.preventDefault();
-    // Depois de trocar de tela, o trackpad continua mandando eventos por inércia: só aceita de novo após uma pausa
-    const agora = performance.now();
-    const pausa = agora - ultimaRoda;
-    ultimaRoda = agora;
-    if (travado) return;
-    if (esperaPausa) { if (pausa < 180) return; esperaPausa = false; }
-    soma += e.deltaY;
-    clearTimeout(timer);
-    timer = setTimeout(() => { soma = 0; }, 200);
-    if (Math.abs(soma) > 40) { soma = 0; go(atual + dir); }
-  }, { passive: false });
-
-  let toque = null;
-  window.addEventListener('touchstart', (e) => {
-    if (e.touches.length !== 1) return;
-    toque = { x: e.touches[0].clientX, y: e.touches[0].clientY, desce: !podeRolar(1), sobe: !podeRolar(-1) };
-  }, { passive: true });
-  window.addEventListener('touchend', (e) => {
-    if (!toque || travado) { toque = null; return; }
-    const dx = e.changedTouches[0].clientX - toque.x, dy = e.changedTouches[0].clientY - toque.y;
-    if (Math.abs(dy) > 60 && Math.abs(dy) > Math.abs(dx) * 1.2) {
-      if (dy < 0 && toque.desce) go(atual + 1);
-      if (dy > 0 && toque.sobe) go(atual - 1);
-    }
-    toque = null;
-  }, { passive: true });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey || e.altKey || e.metaKey) return; // atalhos do navegador
-    if (travado || e.target.closest('input, textarea, select, [contenteditable]')) return;
-    // Espaço em link ou botão é para clicar, não para trocar de tela
-    if (e.key === ' ' && e.target.closest('a, button')) return;
-    if (e.key === 'Home') { e.preventDefault(); go(0); return; }
-    if (e.key === 'End') { e.preventDefault(); go(telas.length - 1); return; }
-    const prox = ['ArrowDown', 'PageDown', ' '].includes(e.key);
-    const ant = ['ArrowUp', 'PageUp'].includes(e.key);
-    if (!prox && !ant) return;
-    const dir = prox ? 1 : -1;
-    if (podeRolar(dir)) return;
-    e.preventDefault();
-    go(atual + dir);
-  });
-
-  // Links internos (#secao) levam à tela certa
-  document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
-    const alvo = document.getElementById(a.getAttribute('href').slice(1));
-    // "Pular para o conteúdo" aponta para o <main>: leva o foco para a tela que está na frente
-    if (alvo && !alvo.closest('.screen') && alvo.contains(telas[atual])) {
-      e.preventDefault();
-      telas[atual].setAttribute('tabindex', '-1');
-      telas[atual].focus({ preventScroll: true });
-      return;
-    }
-    const i = alvo ? telas.indexOf(alvo.closest('.screen')) : -1;
+  // Links internos: o salto nativo não funciona com seção grudada (ela já está no topo)
+  document.querySelectorAll('a[href^="#"]:not(.pular)').forEach((a) => a.addEventListener('click', (e) => {
+    const i = indiceDe(a.getAttribute('href').slice(1));
     if (i < 0) return;
     e.preventDefault();
-    go(i);
+    vai(i);
   }));
+  // Navegando com Tab: se o foco cair numa seção coberta, ela volta para a frente
+  document.addEventListener('focusin', (e) => {
+    const i = secoes.findIndex((t) => t.contains(e.target));
+    if (empilhada() && i >= 0 && i !== atual) vai(i, false);
+  });
 
-  const atualizaTudo = () => { navAltura(); render(); renders.forEach((r) => r()); };
-  let raf = 0;
-  window.addEventListener('resize', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(atualizaTudo); });
-  window.addEventListener('load', atualizaTudo);
-  navAltura();
-  // Link de fora com #secao abre direto na tela certa
-  const indiceDoHash = () => {
-    let id = location.hash.slice(1);
-    try { id = decodeURIComponent(id); } catch { return 0; }
-    const alvo = id ? document.getElementById(id) : null;
-    const i = alvo ? telas.indexOf(alvo.closest('.screen')) : -1;
-    return i >= 0 ? i : 0;
+  // Seção mais alta que a janela rola inteira antes de grudar (top negativo), para nada ficar cortado
+  const ajusta = () => {
+    root.style.setProperty('--nav', `${topo.offsetHeight}px`);
+    root.classList.toggle('empilha', largo.matches && !reduz);
+    secoes.forEach((t) => { t.style.top = empilhada() ? `${Math.min(0, window.innerHeight - t.offsetHeight)}px` : ''; });
+    renders.forEach((r) => r());
+    marca();
   };
-  window.addEventListener('hashchange', () => go(indiceDoHash(), { atualizaHash: false }));
-  go(indiceDoHash(), { atualizaHash: false });
+
+  let raf = 0;
+  window.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(marca); }, { passive: true });
+  window.addEventListener('resize', ajusta);
+  window.addEventListener('hashchange', () => { const i = indiceDoHash(); if (i >= 0) vai(i); });
+  // Link de fora com #secao abre direto na seção certa
+  window.addEventListener('load', () => { ajusta(); const i = indiceDoHash(); if (i >= 0) vai(i, false); });
+  ajusta();
 })();

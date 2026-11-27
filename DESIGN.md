@@ -24,4 +24,4 @@ Amarelo sobre branco: nunca em texto.
 ## Formas
 - Cantos retos, cores chapadas, sem degradê.
 - Botões: `.btn` com `.btn-roxo`, `.btn-amarelo` ou `.btn-linha`.
-- Sombras: `--sombra-tela` e `--sombra-item`.
+- Sombra: `--sombra-item` (itens do carrossel).

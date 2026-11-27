@@ -5,11 +5,11 @@ Site da **Vanessa Chaves** (@vanessachaves_tdah), orientadora parental em TDAH e
 ## Características
 
 - **Identidade do Instagram**: roxo, amarelo e azul chapados, Montserrat Black em caixa alta, cantos retos
-- **Transição de garrafas**: cada seção é uma tela; a atual fica grande no meio e as vizinhas aparecem menores em cima e embaixo
+- **Seções empilhadas**: no computador, cada seção ocupa a tela e a próxima sobe por cima, enquanto a anterior encolhe e some
 - **Carrossel de garrafa**: os posts giram na horizontal (arrastar, setas ou teclado)
 - **Frases**: as cinco aparecem juntas, em grade
-- **Títulos letra por letra** ao trocar de tela
-- **Responsivo**: no celular, a página rola normal (sem o efeito de telas)
+- **Títulos letra por letra** quando a seção aparece
+- **Responsivo**: no celular, uma seção embaixo da outra, sem empilhar
 - **Acessível**: navegação por teclado, textos alternativos e respeito a "reduzir movimento"
 
 ## Estrutura
@@ -18,7 +18,7 @@ Site da **Vanessa Chaves** (@vanessachaves_tdah), orientadora parental em TDAH e
 vanessachaves-site/
 ├── index.html          # conteúdo do site
 ├── styles/style.css    # cores, fontes e layout
-├── scripts/app.js      # transição de garrafas e carrosséis
+├── scripts/app.js      # seções empilhadas e carrossel
 ├── assets/img/         # fotos, logo, capas dos carrosséis, favicon
 ├── build.mjs           # monta a pasta dist/ que vai ao ar
 ├── wrangler.jsonc      # projeto no Cloudflare Pages
@@ -34,11 +34,8 @@ vanessachaves-site/
 --roxo: #954CCA;   /* tom da marca ajustado para contraste WCAG AA */
 --amarelo: #FFD002;
 --azul: #1A78CF;   /* tom da marca ajustado para contraste WCAG AA */
---fundo: #E9E6EC;   /* fundo atrás das telas */
+--fundo: #E9E6EC;   /* fundo atrás das seções */
 ```
-
-**Trocar a transição** (`scripts/app.js`, procure `const amostra`):
-- `'a'` clássica · `'b'` empilhada · `'c'` inclinada
 
 **Contato**: todos os botões abrem o direct do Instagram (`https://ig.me/m/vanessachaves_tdah`). Para usar WhatsApp, troque esse link no `index.html` por `https://wa.me/55DDDNUMERO`.
 
