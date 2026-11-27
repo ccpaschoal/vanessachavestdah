@@ -53,6 +53,9 @@ Endereço: `https://vanessachaves.pages.dev/`
 npm run deploy
 ```
 
+O endereço antigo (`ccpaschoal.github.io/vanessachavestdah/`) redireciona para o novo
+(`scripts/redireciona.js`); para isso o GitHub Pages precisa continuar ligado na `main`.
+
 O `build.mjs` monta a pasta `dist/` só com o que é público (`index.html`, `sitemap.xml`,
 `styles/`, `scripts/`, `assets/`) e gera o `_headers` (segurança e cache).
 O projeto no Cloudflare é configurado em `wrangler.jsonc`.
