@@ -66,13 +66,6 @@
     cf.setAttribute('role', 'region');
     cf.setAttribute('aria-roledescription', 'carrossel');
 
-    if (cf.dataset.fundo) {
-      const f = document.createElement('span');
-      f.className = 'cf-fundo';
-      f.setAttribute('aria-hidden', 'true');
-      f.textContent = cf.dataset.fundo;
-      cf.prepend(f);
-    }
     const rod = document.createElement('div');
     rod.className = 'cf-rodape';
     const prev = seta(-1), next = seta(1);

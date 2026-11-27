@@ -192,8 +192,6 @@ main { padding-top: var(--nav); }
 
 /* ── Carrossel garrafas (horizontal) ── */
 .cf { position: relative; min-width: 0; }
-.cf-fundo { position: absolute; top: 50%; left: -40px; right: -40px; transform: translateY(-50%); font-family: var(--f-display); font-weight: 900; text-transform: uppercase;
-  font-size: clamp(3rem, 10vw, 7.5rem); line-height: 1; white-space: nowrap; text-align: center; opacity: .1; pointer-events: none; user-select: none; overflow: hidden; }
 /* Sem JavaScript: os itens viram uma fileira com rolagem lateral */
 .cf-rail { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; }
 .cf-item { position: relative; flex: 0 0 var(--cf); margin: 0; scroll-snap-align: center; }
@@ -223,7 +221,8 @@ main { padding-top: var(--nav); }
 
 /* ── 6. Conteúdos ── */
 .conteudos { display: grid; gap: 16px; }
-.conteudos .cf { --cf: clamp(180px, 24vw, 270px); color: var(--roxo); }
+.conteudos .cf { --cf: clamp(220px, min(32vw, 50vh), 400px); color: var(--roxo); }
+@media (max-width: 600px) { .conteudos .cf { --cf: min(66vw, 300px); } }
 .conteudos-topo { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px; }
 
 /* ── 7. Contato ── */
