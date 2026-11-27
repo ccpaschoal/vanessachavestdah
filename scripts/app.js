@@ -161,6 +161,31 @@
   const topo = document.querySelector('.topo');
   const contador = document.getElementById('contador');
   if (!telas.length || !topo) return;
+
+  /* No celular (em pé ou deitado) a página rola normal: as seções são mais altas que a tela e o modo de telas as cortava */
+  const celular = matchMedia('(max-width: 600px), (max-height: 500px) and (pointer: coarse)');
+  // Girou o aparelho ou mudou a janela a ponto de trocar de modo: recarrega no modo certo
+  celular.addEventListener('change', () => location.reload());
+  if (celular.matches) {
+    // cada seção anima (títulos e blocos) na primeira vez que aparece
+    const aparece = new IntersectionObserver((entradas) => entradas.forEach((e) => {
+      if (e.isIntersecting) e.target.classList.add('is-current');
+    }), { rootMargin: '0px 0px -15% 0px' });
+    // contador e barra do topo seguem a seção que cruza o meio da tela
+    const meio = new IntersectionObserver((entradas) => entradas.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const i = telas.indexOf(e.target);
+      topo.style.setProperty('--progresso', (i / (telas.length - 1)).toFixed(4));
+      if (contador) contador.textContent = `${pad2(i + 1)} / ${pad2(telas.length)}`;
+    }), { rootMargin: '-50% 0px -49% 0px' });
+    telas.forEach((t) => { aparece.observe(t); meio.observe(t); });
+    // Medidas dos carrosséis de novo quando a fonte e as imagens chegam ou a largura muda
+    const mede = () => renders.forEach((r) => r());
+    window.addEventListener('load', mede);
+    window.addEventListener('resize', mede);
+    return;
+  }
+
   const DUR = reduz ? 0 : 850;
   let atual = -1, travado = false;
   root.classList.add('deck-on');
@@ -169,7 +194,7 @@
 
   const render = () => {
     const vh = window.innerHeight;
-    const folga = window.innerWidth <= 600 ? Math.round(TELA.folga * .6) : TELA.folga;
+    const { folga } = TELA;
     const alturas = telas.map((t) => t.offsetHeight); // todas as leituras antes das escritas (sem recalcular layout a cada tela)
     const hAtual = alturas[atual];
     telas.forEach((t, i) => {

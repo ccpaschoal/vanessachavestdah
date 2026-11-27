@@ -8,7 +8,7 @@ Site da **Vanessa Chaves** (@vanessachaves_tdah), orientadora parental em TDAH e
 - **Transição de garrafas**: cada seção é uma tela; a atual fica grande no meio e as vizinhas aparecem menores em cima e embaixo
 - **Carrosséis de garrafa**: as frases e os posts giram na horizontal (arrastar, setas ou teclado)
 - **Títulos letra por letra** ao trocar de tela
-- **Responsivo**: no celular, a tela rola por dentro antes de passar para a próxima
+- **Responsivo**: no celular, a página rola normal (sem o efeito de telas)
 - **Acessível**: navegação por teclado, textos alternativos e respeito a "reduzir movimento"
 
 ## Estrutura
@@ -19,7 +19,8 @@ vanessachaves-site/
 ├── styles/style.css    # cores, fontes e layout
 ├── scripts/app.js      # transição de garrafas e carrosséis
 ├── assets/img/         # fotos, logo, capas dos carrosséis, favicon
-├── netlify.toml        # configuração do Netlify
+├── build.mjs           # monta a pasta dist/ que vai ao ar
+├── wrangler.jsonc      # projeto no Cloudflare Pages
 ├── sitemap.xml         # URL canônica pública
 ├── .env.example        # explica a ausência de variáveis obrigatórias
 └── README.md
@@ -44,27 +45,20 @@ vanessachaves-site/
 
 **Depois de mudar CSS ou JS**: troque o `?v=` no `index.html` (ex.: `20261104a` → `20261104b`) para o navegador não mostrar a versão antiga.
 
-## Publicar no Netlify
+## Publicar (Cloudflare Pages)
 
-O site atual está no GitHub Pages: `https://ccpaschoal.github.io/vanessachavestdah/`.
-O arquivo `netlify.toml` é apenas uma configuração opcional para uma futura migração.
+Endereço: `https://vanessachaves.pages.dev/`
 
-**Jeito rápido (arrastar somente arquivos públicos):**
-1. Entre em https://app.netlify.com/drop
-2. Prepare uma pasta separada contendo somente `index.html`, `styles/`, `scripts/`, `assets/`, `sitemap.xml` e `netlify.toml`; arraste essa cópia para a página. Nunca inclua `.git`, `.env`, backups, logs ou credenciais locais.
-3. O site fica no ar num endereço `....netlify.app` (dá para renomear em *Site configuration → Change site name*)
+```powershell
+npm run deploy
+```
 
-**Pelo GitHub (atualiza sozinho a cada mudança):**
-1. Crie um repositório no GitHub e envie esta pasta (pelo GitHub Desktop: *Add → Add existing repository*)
-2. No Netlify: *Add new site → Import an existing project → GitHub* e escolha o repositório
-3. Deixe *Build command* vazio e *Publish directory* como `.`
+O `build.mjs` monta a pasta `dist/` só com o que é público (`index.html`, `sitemap.xml`,
+`styles/`, `scripts/`, `assets/`) e gera o `_headers` (segurança e cache).
+O projeto no Cloudflare é configurado em `wrangler.jsonc`.
 
-**Domínio próprio** (ex.: vanessachaves.com.br): *Domain management → Add a domain* no Netlify.
-
-Em uma migração, atualize canonical, Open Graph, dados estruturados e sitemap juntos.
-O `robots.txt` efetivo é o da raiz do domínio; um arquivo dentro de
-`/vanessachavestdah/` não controla os buscadores. O sitemap pode ser informado
-ao Search Console ou ao `robots.txt` da raiz, com acesso do responsável pelo domínio.
+**Domínio próprio** (ex.: vanessachaves.com.br): no painel do Cloudflare, *Workers & Pages → vanessachaves → Custom domains*.
+Ao trocar de endereço, atualize canonical, Open Graph, dados estruturados e sitemap juntos.
 
 ## Configurações e segurança
 
@@ -81,8 +75,8 @@ Uma integração futura com credencial privada exigirá execução no servidor e
 permissões mínimas; não há motivo para criar esse servidor antecipadamente.
 
 O `.gitignore` evita versionar `.env` e variantes, preservando `.env.example`.
-Isso não controla acesso HTTP: o bloqueio adicional em `netlify.toml` só vale
-na Netlify, e não substitui a exclusão de arquivos privados da pasta publicada.
+Isso não controla acesso HTTP: por isso só a pasta `dist/` é publicada, sem
+arquivos internos do repositório.
 Remover uma credencial vazada do código não resolve o vazamento anterior:
 avalie revogação/rotação no serviço com autorização do responsável.
 

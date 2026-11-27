@@ -1,0 +1,7 @@
+// Cloudflare Pages: https://vanessachaves.pages.dev
+// Site estático (pasta dist, gerada pelo build.mjs). Publicar: npm run deploy
+{
+  "name": "vanessachaves",
+  "pages_build_output_dir": "dist",
+  "compatibility_date": "2026-11-03"
+}

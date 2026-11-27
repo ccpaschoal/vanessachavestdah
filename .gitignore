@@ -2,7 +2,8 @@
 Thumbs.db
 desktop.ini
 *.psd
-.netlify/
+dist/
+.wrangler/
 node_modules/
 
 # Credenciais locais (somente o exemplo sem valores reais é versionado)

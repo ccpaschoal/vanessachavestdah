@@ -1,0 +1,10 @@
+{
+  "name": "site-vanessa",
+  "private": true,
+  "type": "module",
+  "description": "Site da Vanessa Chaves (Cloudflare Pages)",
+  "scripts": {
+    "build": "node build.mjs",
+    "deploy": "node build.mjs && wrangler pages deploy --branch main --commit-dirty=true"
+  }
+}

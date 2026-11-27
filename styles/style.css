@@ -123,7 +123,8 @@ html.deck-on, .deck-on body { height: 100%; overflow: hidden; overscroll-behavio
 }
 .deck-on .screen.is-near { overflow: hidden; cursor: pointer; }
 @media (max-width: 860px) { .deck-on .screen { --peek: 44px; } }
-@media (max-width: 600px) { .deck-on .screen { --peek: 34px; } }
+/* Rolagem normal (celular): o link #secao não fica escondido atrás do cabeçalho fixo */
+.screen { scroll-margin-top: calc(var(--nav) + env(safe-area-inset-top, 0px) + 12px); }
 
 /* Títulos se escrevem letra por letra */
 .js .is-split .palavra-t { display: inline-block; white-space: nowrap; }
