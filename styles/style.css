@@ -161,12 +161,24 @@ main { padding-top: var(--nav); }
 }
 
 /* ── 2. Dores ── */
-.dores { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
-.dores-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
-.dores-lista li { font-family: var(--f-display); font-weight: 900; text-transform: uppercase; font-size: clamp(1.2rem, 2.6vw, 2rem); line-height: 1.08; }
-.dores-lista li:nth-child(even) { color: var(--amarelo); text-align: right; }
+.dores { display: grid; gap: clamp(32px, 6vh, 64px); align-content: center; }
+/* Dores soltas: cada frase grande, em degraus pela largura, surgindo uma de cada vez */
+.dores-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(10px, 2.2vh, 24px); }
+.dores-lista li { font-family: var(--f-display); font-weight: 900; text-transform: uppercase; font-size: clamp(1.6rem, 3.8vw, 3.2rem); line-height: 1.02; letter-spacing: -.01em; margin-left: var(--recuo, 0); }
+.dores-lista li:nth-child(even) { color: var(--amarelo); }
+.dores-lista li:nth-child(2) { --recuo: 22%; }
+.dores-lista li:nth-child(3) { --recuo: 8%; }
+.dores-lista li:nth-child(4) { --recuo: 34%; }
+.dores-lista li:nth-child(5) { --recuo: 14%; }
+.js .dores-lista .sobe { transition-delay: calc(var(--i, 0) * 280ms + 120ms); }
 .dores-txt { display: grid; gap: 16px; min-width: 0; }
-@media (max-width: 760px) { .dores { grid-template-columns: 1fr; } }
+@media (min-width: 761px) { .dores-txt { grid-template-columns: 1.1fr .9fr; column-gap: clamp(24px, 4vw, 56px); align-items: end; } }
+@media (max-width: 600px) {
+  .dores-lista li:nth-child(2) { --recuo: 14%; }
+  .dores-lista li:nth-child(3) { --recuo: 0%; }
+  .dores-lista li:nth-child(4) { --recuo: 10%; }
+  .dores-lista li:nth-child(5) { --recuo: 4%; }
+}
 
 /* ── 3. Calma em Casa ── */
 .calma { display: grid; gap: clamp(20px, 3vw, 32px); }
