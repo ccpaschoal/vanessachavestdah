@@ -78,7 +78,7 @@ p { margin: 0; max-width: 62ch; }
 .btn-linha { border-color: currentColor; background: transparent; }
 .btn svg { width: 1.1em; height: 1.1em; flex: none; }
 .saiba { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--f-display); font-weight: 800; font-size: var(--t-p); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; }
-.saiba::after { content: " >>>"; }
+.saiba::after { content: ">>>"; margin-left: .45em; } /* com inline-flex o espaço dentro do content sumia */
 
 /* ── Cabeçalho ── */
 .topo {
@@ -130,7 +130,13 @@ main { padding-top: var(--nav); }
 
 /* Títulos se escrevem letra por letra */
 .js .is-split .palavra-t { display: inline-block; white-space: nowrap; }
-.js .is-split .sub .ch { text-decoration: underline; text-decoration-thickness: 0.07em; text-underline-offset: 0.16em; text-decoration-color: var(--sub-cor, currentColor); }
+/* Títulos animados: o sublinhado é uma linha só embaixo da expressão inteira (sublinhar letra por letra deixava cortes)
+   e se desenha da esquerda para a direita depois que as letras aparecem */
+.js .is-split .sub { display: inline-block; text-decoration: none; padding-bottom: .06em; /* inline-block: a expressão sublinhada não se parte entre linhas */
+  background: linear-gradient(var(--sub-cor, currentColor), var(--sub-cor, currentColor)) left bottom / 0% .07em no-repeat;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone; transition: background-size .7s var(--ease) .45s; }
+.js .is-split.is-visto .sub { background-size: 100% .07em; }
+@media (prefers-reduced-motion: reduce) { .js .is-split .sub { background-size: 100% .07em; } }
 .js .is-split .ch { display: inline-block; opacity: 0; transform: translateY(.25em);
   transition: opacity .5s var(--ease), transform .5s var(--ease); transition-delay: calc(var(--c) * 32ms + 180ms); }
 .js .is-split.is-visto .ch { opacity: 1; transform: none; }
