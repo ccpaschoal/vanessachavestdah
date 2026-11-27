@@ -21,7 +21,8 @@
   --fundo: #E9E6EC;      /* fundo atrás das seções, aparece quando uma some */
   --f-display: "Montserrat", "Arial Black", "Helvetica Neue", Arial, sans-serif;
   --f-corpo: "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  --nav: 64px;
+  --barra: 64px;        /* altura da barra do topo, sem a faixa do notch */
+  --nav: calc(var(--barra) + env(safe-area-inset-top, 0px));
   --ease: cubic-bezier(.22, .8, .24, 1);
   /* Textos pequenos: só estes três tamanhos */
   --t-p: .72rem;         /* rótulos, selos, contador */
@@ -41,6 +42,8 @@ body {
   font-size: 1rem;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%; text-size-adjust: 100%; /* iPhone deitado não aumenta o texto sozinho */
+  -webkit-tap-highlight-color: transparent;
 }
 img { max-width: 100%; display: block; }
 a { color: inherit; }
@@ -74,12 +77,12 @@ p { margin: 0; max-width: 62ch; }
 .btn-roxo { background: var(--roxo); color: var(--branco); }
 .btn-linha { border-color: currentColor; background: transparent; }
 .btn svg { width: 1.1em; height: 1.1em; flex: none; }
-.saiba { font-family: var(--f-display); font-weight: 800; font-size: var(--t-p); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; }
+.saiba { display: inline-flex; align-items: center; min-height: 44px; font-family: var(--f-display); font-weight: 800; font-size: var(--t-p); letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; }
 .saiba::after { content: " >>>"; }
 
 /* ── Cabeçalho ── */
 .topo {
-  position: fixed; top: env(safe-area-inset-top, 0px); left: 0; right: 0; z-index: 50; height: var(--nav);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: var(--nav); padding-top: env(safe-area-inset-top, 0px);
   background: var(--branco); border-bottom: 1px solid var(--linha);
   padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
@@ -96,7 +99,14 @@ p { margin: 0; max-width: 62ch; }
 .nav .btn { padding: 0.7em 1.1em; font-size: var(--t-p); }
 .contador { font-family: var(--f-display); font-weight: 800; font-size: var(--t-p); color: var(--tinta-suave); font-variant-numeric: tabular-nums; }
 @media (max-width: 900px) { .nav a.link { display: none; } }
-@media (max-width: 440px) { .nav .btn span, .marca-tag { display: none; } .nav .btn { padding: 0.65em; } }
+@media (max-width: 600px) { .contador { display: none; } }
+@media (max-width: 440px) {
+  .nav .btn span, .marca-tag { display: none; }
+  .nav .btn { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .nav .btn svg { width: 20px; height: 20px; }
+  .marca { gap: 8px; }
+  .marca-nome { white-space: nowrap; font-size: clamp(.86rem, 4.4vw, 1rem); }
+}
 
 /* ── Seções ── */
 main { padding-top: var(--nav); }
@@ -196,7 +206,7 @@ main { padding-top: var(--nav); }
 .cf-conta { font-family: var(--f-display); font-weight: 800; font-variant-numeric: tabular-nums; }
 .cf-barra { position: relative; width: min(150px, 28vw); height: 3px; background: rgba(0,0,0,.15); }
 .cf-barra span { position: absolute; inset: 0 auto 0 0; width: var(--cf-p, 0%); background: currentColor; transition: width .6s var(--ease); }
-.cf-btn { width: 38px; height: 38px; display: grid; place-items: center; border: 2.5px solid currentColor; background: transparent; color: inherit; cursor: pointer; transition: transform .18s var(--ease), opacity .18s; }
+.cf-btn { width: 44px; height: 44px; display: grid; place-items: center; border: 2.5px solid currentColor; background: transparent; color: inherit; cursor: pointer; transition: transform .18s var(--ease), opacity .18s; }
 .cf-btn[aria-disabled="true"] { opacity: .3; cursor: default; }
 .cf-btn svg { width: 18px; height: 18px; }
 
@@ -222,7 +232,7 @@ main { padding-top: var(--nav); }
 .contato-box .eyebrow { color: var(--azul-escuro); }
 .palavra { font-family: var(--f-display); font-weight: 900; font-size: 2.1rem; color: var(--roxo); letter-spacing: .04em; line-height: 1; }
 .rodape { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.35); font-size: var(--t-p); }
-.rodape a { font-weight: 800; text-decoration: none; }
+.rodape a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -12px; font-weight: 800; text-decoration: none; }
 @media (max-width: 760px) { .contato { grid-template-columns: 1fr; } }
 
 /* ── Acessibilidade e utilitários ── */
@@ -250,3 +260,16 @@ main:focus { outline: none; }
   .cred { gap: 6px; }
   .cred span { font-size: var(--t-p); padding: .35em .6em; }
 }
+
+/* Celular deitado (tela baixa): barra do topo menor e a foto ao lado do texto, como no computador */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root { --barra: 52px; }
+  .marca-tag { display: none; }
+  .marca img { width: 40px; height: 34px; }
+  .hero { grid-template-columns: 1.15fr .85fr; }
+  .hero-foto { order: 0; height: auto; min-height: 0; margin: calc(var(--pad) * -1) calc(var(--lado) * -1) calc(var(--pad) * -1) 0; border-bottom: 0; border-left: 8px solid var(--amarelo); }
+}
+/* Última seção não fica embaixo da barra de gestos do iPhone */
+.contato { padding-bottom: max(var(--pad), calc(env(safe-area-inset-bottom, 0px) + 16px)); }
+/* Tela de toque: botões do topo com altura mínima para o dedo */
+@media (pointer: coarse) { .nav .btn { min-height: 44px; } }

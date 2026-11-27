@@ -217,7 +217,6 @@
 
   // Seção mais alta que a janela rola inteira antes de grudar (top negativo), para nada ficar cortado
   const ajusta = () => {
-    root.style.setProperty('--nav', `${topo.offsetHeight}px`);
     root.classList.toggle('empilha', largo.matches && !reduz);
     secoes.forEach((t) => { t.style.top = empilhada() ? `${Math.min(0, window.innerHeight - t.offsetHeight)}px` : ''; });
     renders.forEach((r) => r());
