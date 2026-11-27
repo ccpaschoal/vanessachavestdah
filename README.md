@@ -6,7 +6,8 @@ Site da **Vanessa Chaves** (@vanessachaves_tdah), orientadora parental em TDAH e
 
 - **Identidade do Instagram**: roxo, amarelo e azul chapados, Montserrat Black em caixa alta, cantos retos
 - **Transição de garrafas**: cada seção é uma tela; a atual fica grande no meio e as vizinhas aparecem menores em cima e embaixo
-- **Carrosséis de garrafa**: as frases e os posts giram na horizontal (arrastar, setas ou teclado)
+- **Carrossel de garrafa**: os posts giram na horizontal (arrastar, setas ou teclado)
+- **Frases**: as cinco aparecem juntas, em grade
 - **Títulos letra por letra** ao trocar de tela
 - **Responsivo**: no celular, a página rola normal (sem o efeito de telas)
 - **Acessível**: navegação por teclado, textos alternativos e respeito a "reduzir movimento"
