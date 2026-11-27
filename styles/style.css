@@ -162,17 +162,18 @@ main { padding-top: var(--nav); }
 
 /* ── 2. Dores ── */
 .dores { display: grid; gap: clamp(32px, 6vh, 64px); align-content: center; }
+/* Computador: lista de um lado, texto do outro */
+@media (min-width: 861px) { .dores { grid-template-columns: 1.2fr .8fr; column-gap: clamp(32px, 5vw, 80px); align-items: center; } }
 /* Dores soltas: cada frase grande, em degraus pela largura, surgindo uma de cada vez */
 .dores-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(10px, 2.2vh, 24px); }
-.dores-lista li { font-family: var(--f-display); font-weight: 900; text-transform: uppercase; font-size: clamp(1.6rem, 3.8vw, 3.2rem); line-height: 1.02; letter-spacing: -.01em; margin-left: var(--recuo, 0); }
+.dores-lista li { font-family: var(--f-display); font-weight: 900; text-transform: uppercase; font-size: clamp(1.6rem, 3.2vw, 2.9rem); line-height: 1.02; letter-spacing: -.01em; margin-left: var(--recuo, 0); text-wrap: balance; }
 .dores-lista li:nth-child(even) { color: var(--amarelo); }
-.dores-lista li:nth-child(2) { --recuo: 22%; }
-.dores-lista li:nth-child(3) { --recuo: 8%; }
-.dores-lista li:nth-child(4) { --recuo: 34%; }
-.dores-lista li:nth-child(5) { --recuo: 14%; }
+.dores-lista li:nth-child(2) { --recuo: 16%; }
+.dores-lista li:nth-child(3) { --recuo: 4%; }
+.dores-lista li:nth-child(4) { --recuo: 10%; }
+.dores-lista li:nth-child(5) { --recuo: 6%; }
 .js .dores-lista .sobe { transition-delay: calc(var(--i, 0) * 280ms + 120ms); }
 .dores-txt { display: grid; gap: 16px; min-width: 0; }
-@media (min-width: 761px) { .dores-txt { grid-template-columns: 1.1fr .9fr; column-gap: clamp(24px, 4vw, 56px); align-items: end; } }
 @media (max-width: 600px) {
   .dores-lista li:nth-child(2) { --recuo: 14%; }
   .dores-lista li:nth-child(3) { --recuo: 0%; }
